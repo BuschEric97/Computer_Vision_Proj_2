@@ -7,17 +7,17 @@ import sys
 
 def detectWink(frame, location, ROI, cascade):
     eyes = cascade.detectMultiScale(
-        ROI, 1.15, 3, 0|cv2.CASCADE_SCALE_IMAGE, (10, 20)) 
+        ROI, 1.15, 3, 0|cv2.CASCADE_SCALE_IMAGE, (10, 20))
     for e in eyes:
         e[0] += location[0]
         e[1] += location[1]
         x, y, w, h = e[0], e[1], e[2], e[3]
-        
+
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0, 0, 255), 2)
     return len(eyes) == 1    # number of eyes is one
 
 def detect(frame, faceCascade, eyesCascade):
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) 
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # possible frame pre-processing:
     # gray_frame = cv2.equalizeHist(gray_frame)
@@ -25,19 +25,19 @@ def detect(frame, faceCascade, eyesCascade):
 
     scaleFactor = 1.15 # range is from 1 to ..
     minNeighbors = 3   # range is from 0 to ..
-    flag = 0|cv2.CASCADE_SCALE_IMAGE # either 0 or 0|cv2.CASCADE_SCALE_IMAGE 
+    flag = 0|cv2.CASCADE_SCALE_IMAGE # either 0 or 0|cv2.CASCADE_SCALE_IMAGE
     minSize = (30,30) # range is from (0,0) to ..
     faces = faceCascade.detectMultiScale(
-        gray_frame, 
-        scaleFactor, 
-        minNeighbors, 
-        flag, 
+        gray_frame,
+        scaleFactor,
+        minNeighbors,
+        flag,
         minSize)
 
     detected = 0
     for f in faces:
         x, y, w, h = f[0], f[1], f[2], f[3]
-        faceROI = gray_frame[y:y+h, x:x+w]
+        faceROI = gray_frame[y:int(y+(h/2)), x:x+w] # Set faceROI to be the top half of the face because eyes are only ever in that area
         if detectWink(frame, (x, y), faceROI, eyesCascade):
             detected += 1
             cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
@@ -85,7 +85,7 @@ def runonVideo(face_cascade, eyes_cascade):
         cv2.imshow(windowName, frame)
         if cv2.waitKey(30) >= 0:
             showlive = False
-    
+
     # outside the while loop
     videocapture.release()
     cv2.destroyAllWindows()
@@ -99,9 +99,9 @@ if __name__ == "__main__":
         exit()
 
     # load pretrained cascades
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades 
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades
                                       + 'haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades 
+    eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades
                                       + 'haarcascade_eye.xml')
 
     if(len(sys.argv) == 2): # one argument
@@ -110,4 +110,3 @@ if __name__ == "__main__":
         print("Total of ", detections, "detections")
     else: # no arguments
         runonVideo(face_cascade, eye_cascade)
-
