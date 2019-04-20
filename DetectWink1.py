@@ -37,7 +37,7 @@ def detect(frame, faceCascade, eyesCascade):
     detected = 0
     for f in faces:
         x, y, w, h = f[0], f[1], f[2], f[3]
-        faceROI = gray_frame[y:int(y+(h/2)), x:x+w] # Set faceROI to be the top half of the face because eyes are only ever in that area
+        faceROI = gray_frame[y:int(y+(h*0.6)), x:x+w] # Set faceROI to be the top 60% of the face because eyes are only ever in that area
         if detectWink(frame, (x, y), faceROI, eyesCascade):
             detected += 1
             cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
