@@ -15,9 +15,12 @@ from os.path import isfile, join
 import sys
 
 def detectWink(frame, location, ROI, cascade):
+    #ROI = cv2.equalizeHist(ROI)
+    #ROI = cv2.medianBlur(ROI, 3)
+
     # run cascade detection algorithm for eyes
     eyes = cascade.detectMultiScale(
-        ROI, 1.15, 3, 0|cv2.CASCADE_SCALE_IMAGE, (10, 20))
+        ROI, 1.15, 4, 0|cv2.CASCADE_SCALE_IMAGE, (5, 10))
 
     # iterate through each eye detected in order to put a box around it
     for e in eyes:
@@ -35,7 +38,7 @@ def detect(frame, faceCascade, eyesCascade):
 
     # frame preprocessing
     gray_frame = cv2.equalizeHist(gray_frame)
-    gray_frame = cv2.medianBlur(gray_frame, 3)
+    #gray_frame = cv2.medianBlur(gray_frame, 3)
 
     # run cascade detection algorithm for faces
     scaleFactor = 1.15 # range is from 1 to ..
