@@ -41,7 +41,8 @@ def detect(frame, faceCascade, eyesCascade):
 
     # frame preprocessing
     gray_frame = cv2.equalizeHist(gray_frame)
-    #gray_frame = cv2.medianBlur(gray_frame, 3)
+    if (not (frame.shape[1] <= 400 or frame.shape[0] <= 400)): # blur the image if it is not too small
+        gray_frame = cv2.medianBlur(gray_frame, 3)
 
     # run cascade detection algorithm for faces
     scaleFactor = 1.15 # range is from 1 to ..
